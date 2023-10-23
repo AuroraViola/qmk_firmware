@@ -58,16 +58,40 @@ enum keycodes {
 	ROSE238,
 	ROSE245,
     WHITE,
-    RAINBOW,
+    EFFECT1,
+    EFFECT2,
+    EFFECT3,
+    EFFECT4,
+    EFFECT5,
+    EFFECT6,
+    EFFECT7,
+    EFFECT8,
+    EFFECT9,
+    EFFECT10,
+    SPEED1,
+    SPEED2,
+    SPEED3,
+    SPEED4,
+    SPEED5,
+    SPEED6,
+    SPEED7,
+    SPEED8,
+    SPEED9,
+    SPEED10,
+    GAY,
     LESBIAN,
+    BISEXUAL,
     TRANS,
+    PAN,
 };
 
 enum anne_pro_layers {
     BASE,
     FN1,
     FN2,
+    MACRO,
     COLOR,
+    COLOR2,
 };
 
 // clang-format off
@@ -79,7 +103,7 @@ enum anne_pro_layers {
 * |-----------------------------------------------------------------------------------------+
 * | Tab    |  q  |  w  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |  p  |  [  |  ]  |   \    |
 * |-----------------------------------------------------------------------------------------+
-* | Caps    |  a  |  s  |  d  |  f  |  g  |  h  |  j  |  k  |  l  |  ;  |  '  |    Enter    |
+* | FN1     |  a  |  s  |  d  |  f  |  g  |  h  |  j  |  k  |  l  |  ;  |  '  |    Enter    |
 * |-----------------------------------------------------------------------------------------+
 * | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |  .  |  /  |    Shift       |
 * |-----------------------------------------------------------------------------------------+
@@ -91,7 +115,7 @@ enum anne_pro_layers {
 * |-----------------------------------------------------------------------------------------+
 * |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 * |-----------------------------------------------------------------------------------------+
-* |         |     |     |     |     |     |     |     |     |     |     |     |             |
+* | esc     |     |     |     |     |     |     |     |     |     |     |     |             |
 * |-----------------------------------------------------------------------------------------+
 * |            |     |     |     |     |     |     |     |     |     |     |       UP       |
 * |-----------------------------------------------------------------------------------------+
@@ -100,7 +124,7 @@ enum anne_pro_layers {
 */
  const uint16_t keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  [BASE] = LAYOUT_60_ansi( /* Base */
-    KC_ESC,           KC_1,    KC_2,    KC_3, KC_4, KC_5, KC_6,   KC_7, KC_8, KC_9,    KC_0,             KC_MINS,          KC_EQL,        KC_BSPC,
+    QK_GESC,           KC_1,    KC_2,    KC_3, KC_4, KC_5, KC_6,   KC_7, KC_8, KC_9,    KC_0,             KC_MINS,          KC_EQL,        KC_BSPC,
     KC_TAB,           KC_Q,    KC_W,    KC_E, KC_R, KC_T, KC_Y,   KC_U, KC_I, KC_O,    KC_P,             KC_LBRC,          KC_RBRC,       KC_BSLS,
     LT(FN1, KC_CAPS), KC_A,    KC_S,    KC_D, KC_F, KC_G, KC_H,   KC_J, KC_K, KC_L,    KC_SCLN,          KC_QUOT,          KC_ENT,
     KC_LSFT,                   KC_Z,    KC_X, KC_C, KC_V, KC_B,   KC_N, KC_M, KC_COMM, KC_DOT,           KC_SLSH,          RSFT_T(KC_UP),
@@ -109,20 +133,20 @@ enum anne_pro_layers {
   /*
   * Layer FN1
   * ,-----------------------------------------------------------------------------------------.
-  * |  `  |  F1 |  F2 |  F3 |  F4 |  F5 |  F6 |  F7 |  F8 |  F9 | F10 | F11 | F12 |  DELETE   |
+  * | esc |  F1 |  F2 |  F3 |  F4 |  F5 |  F6 |  F7 |  F8 |  F9 | F10 | F11 | F12 |  DELETE   |
   * |-----------------------------------------------------------------------------------------+
   * | Tab    |  q  | UP  |  e  |  r  |  t  |  y  |  u  |  i  |  o  | PS | HOME | END |   \    |
   * |-----------------------------------------------------------------------------------------+
   * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | PGUP|PGDN |    Enter    |
   * |-----------------------------------------------------------------------------------------+
-  * | Shift      |V-UP |V-DWN|MUTE |  v  |  b  |  n  |  m  |  ,  |INSRT| DEL |    Shift       |
+  * | Shift      |  z  |  x  |  c  |  v  |  b  |  n  |  m  |  ,  |INSRT| DEL |    Shift       |
   * |-----------------------------------------------------------------------------------------+
   * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  | Ctrl  |
   * \-----------------------------------------------------------------------------------------/
   *
   */
  [FN1] = LAYOUT_60_ansi( /* FN1 */
-    KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,
+    _______,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_DEL,
     _______, _______, KC_UP,   _______, _______, _______, _______, _______, _______, _______, KC_PSCR, KC_HOME, KC_END,  _______,
     _______, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT, KC_PGUP, KC_PGDN, _______,
     _______,          _______, _______, _______, _______, _______, _______, _______, _______, KC_INS,  KC_DEL,  _______,
@@ -131,31 +155,45 @@ enum anne_pro_layers {
   /*
   * Layer FN2
   * ,-----------------------------------------------------------------------------------------.
-  * |  ~  | BT1 | BT2 | BT3 | BT4 |  F5 |  F6 | F7 | F8 | TOG | MUTE| VOLD | VOLU |    Bksp   |
+  * | esc | BT1 | BT2 | BT3 | BT4 |  F5 |  F6 | F7 | F8 | TOG | MUTE| VOLD | VOLU |   PAUSE   |
   * |-----------------------------------------------------------------------------------------+
   * | Tab    |  q  | UP  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |PLAY| PREV | NEXT|   \    |
   * |-----------------------------------------------------------------------------------------+
   * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | PGUP|PGDN |    Enter    |
   * |-----------------------------------------------------------------------------------------+
-  * | Shift      |  z  |  x  | RGB |  v  |  b  |  n  |  m  |  ,  |INSRT| NUM.|    Shift       |
+  * | Shift      |  z  |  x  |     |  v  |  b  |  n  |  m  |  ,  |INSRT| NUM.|    Shift       |
   * |-----------------------------------------------------------------------------------------+
-  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  | Ctrl  |
+  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  |  LED  |
   * \-----------------------------------------------------------------------------------------/
   *
   */
  [FN2] = LAYOUT_60_ansi( /* FN2 */
     _______, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______, KC_AP_RGB_TOG, KC_MUTE, KC_VOLD, KC_VOLU, KC_PAUSE,
-    MO(FN2), _______,    KC_UP,      _______,    _______,    _______, _______, _______, _______, _______,       KC_MPLY,       KC_MPRV,       KC_MNXT,        _______,
+    _______, _______,    KC_UP,      _______,    _______,    _______, _______, _______, _______, _______,       KC_MPLY,       KC_MPRV,       KC_MNXT,        _______,
     _______, KC_LEFT,    KC_DOWN,    KC_RGHT,    _______,    _______, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT,       KC_PGUP,       KC_PGDN,       _______,
-    _______,             _______,    _______,    _______,    _______, _______, _______, _______, _______,       KC_INS,        KC_KP_DOT,        _______,
+    _______,             _______,    _______,    _______,    _______, _______, _______, OSL(MACRO), _______,       KC_INS,        KC_KP_DOT,        _______,
     _______, _______,    _______,                                     _______,                   _______,       MO(FN1),       MO(FN2),       OSL(COLOR)
  ),
+ [MACRO] = LAYOUT_60_ansi( /* MACRO */
+    TG(BASE), _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______,                   _______,                            _______, _______, _______, _______
+ ),
  [COLOR] = LAYOUT_60_ansi( /* COLOR */
-    _______, RED0, ORNG21, YLLW43, GRN85, CYAN127, AZRE148, BLUE169, VILT180, MGTA201, ROSE222, _______, _______, RAINBOW,
-    _______, RED5, ORNG26, YLLW53, GRN95, CYAN132, AZRE153, BLUE172, VILT185, MGTA206, ROSE230, _______, _______, LESBIAN,
-    _______, RED10, ORNG31, YLLW63, GRN105, CYAN137, AZRE158, BLUE175, VILT190, MGTA211, ROSE238, _______, TRANS,
+    TG(BASE), RED0, ORNG21, YLLW43, GRN85, CYAN127, AZRE148, BLUE169, VILT180, MGTA201, ROSE222, _______, _______, OSL(COLOR2),
+    _______, RED5, ORNG26, YLLW53, GRN95, CYAN132, AZRE153, BLUE172, VILT185, MGTA206, ROSE230, _______, _______, _______,
+    _______, RED10, ORNG31, YLLW63, GRN105, CYAN137, AZRE158, BLUE175, VILT190, MGTA211, ROSE238, _______, _______,
     _______, RED15, ORNG36, YLLW73, GRN115, CYAN142, AZRE163, BLUE178, VILT195, MGTA217, ROSE245, _______,
     _______, _______, _______,                   WHITE,                            _______, _______, _______, _______
+ ),
+ [COLOR2] = LAYOUT_60_ansi( /* COLOR2 */
+    TG(BASE), SPEED1, SPEED2, SPEED3, SPEED4, SPEED5, SPEED6, SPEED7, SPEED8, SPEED9, SPEED10, _______, _______, OSL(COLOR),
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, GAY, LESBIAN, BISEXUAL, TRANS, PAN, _______, _______, _______, _______, _______, _______, _______,
+    _______, EFFECT1, EFFECT2, EFFECT3, EFFECT4, EFFECT5, EFFECT6, EFFECT7, EFFECT8, EFFECT9, EFFECT10, _______,
+    _______, _______, _______,                   _______,                            _______, _______, _______, _______
  ),
 };
 // clang-format on
@@ -511,9 +549,89 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
 
         //  Rainbow
-        case RAINBOW:
+        case EFFECT1:
             if (record->event.pressed) {
                 rgb_matrix_mode(2); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT2:
+            if (record->event.pressed) {
+                rgb_matrix_mode(3); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT3:
+            if (record->event.pressed) {
+                rgb_matrix_mode(4); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT4:
+            if (record->event.pressed) {
+                rgb_matrix_mode(5); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT5:
+            if (record->event.pressed) {
+                rgb_matrix_mode(6); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT6:
+            if (record->event.pressed) {
+                rgb_matrix_mode(7); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT7:
+            if (record->event.pressed) {
+                rgb_matrix_mode(8); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT8:
+            if (record->event.pressed) {
+                rgb_matrix_mode(9); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT9:
+            if (record->event.pressed) {
+                rgb_matrix_mode(10); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Rainbow
+        case EFFECT10:
+            if (record->event.pressed) {
+                rgb_matrix_mode(11); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Gay flag
+        case GAY:
+            if (record->event.pressed) {
+                rgb_matrix_mode(RGB_MATRIX_CUSTOM_gay_flag); //set mode
                 rgb_matrix_sethsv(0, 255, 255); //set HSV 
             }
         return false;
@@ -526,11 +644,97 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
         return false;
 
-        //  Lesbian flag
+        //  Bisexual flag
+        case BISEXUAL:
+            if (record->event.pressed) {
+                rgb_matrix_mode(RGB_MATRIX_CUSTOM_bisexual_flag); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Trans flag
         case TRANS:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_CUSTOM_trans_flag); //set mode
                 rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Pan flag
+        case PAN:
+            if (record->event.pressed) {
+                rgb_matrix_mode(RGB_MATRIX_CUSTOM_pan_flag); //set mode
+                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+            }
+        return false;
+
+        //  Speed1
+        case SPEED1:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(25);
+            }
+        return false;
+
+        //  Speed2
+        case SPEED2:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(51);
+            }
+        return false;
+
+        //  Speed3
+        case SPEED3:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(76);
+            }
+        return false;
+
+        //  Speed4
+        case SPEED4:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(102);
+            }
+        return false;
+
+        //  Speed5
+        case SPEED5:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(127);
+            }
+        return false;
+
+        //  Speed6
+        case SPEED6:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(153);
+            }
+        return false;
+
+        //  Speed7
+        case SPEED7:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(178);
+            }
+        return false;
+
+        //  Speed8
+        case SPEED8:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(204);
+            }
+        return false;
+
+        //  Speed9
+        case SPEED9:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(229);
+            }
+        return false;
+
+        //  Speed10
+        case SPEED10:
+            if (record->event.pressed) {
+                rgb_matrix_set_speed(255);
             }
         return false;
 
@@ -549,6 +753,10 @@ bool rgb_matrix_indicators_user(void) {
         case 2:
             break;
         case 3:
+            rgb_matrix_set_color_all(0, 0, 0); // rest of keys blank/black
+            rgb_matrix_set_color(0, 255, 0, 0); // RED, Escape
+            break;
+        case 4:
             rgb_matrix_set_color_all(0, 0, 0); // rest of keys blank/black
             rgb_matrix_set_color(1, 255, 0, 0); // RED0 true red, 1
             rgb_matrix_set_color(15, 255, 68, 0); // RED5, Q
@@ -591,10 +799,39 @@ bool rgb_matrix_indicators_user(void) {
             rgb_matrix_set_color(38, 255, 0, 70); // ROSE238, :
             rgb_matrix_set_color(51, 255, 0, 26); // ROSE245, ?
             rgb_matrix_set_color(56, 255, 255, 255); // WHITE, Space
-
             rgb_matrix_set_color(13, 255, 255, 255); // WHITE, Backscape
-            rgb_matrix_set_color(27, 255, 255, 255); // WHITE, Backslash
-            rgb_matrix_set_color(40, 255, 255, 255); // WHITE, Enter
+            break;
+        case 5:
+            rgb_matrix_set_color_all(0, 0, 0); // rest of keys blank/black
+            rgb_matrix_set_color(1, 255, 0, 0); // RED0 true red, 1
+            rgb_matrix_set_color(2, 204, 204, 0); // ORNG21 true orange, 2
+            rgb_matrix_set_color(3, 255, 255, 0); // YLLW43 true yellow, 3
+            rgb_matrix_set_color(4, 0, 255, 0); // GRN85 true green, 4
+            rgb_matrix_set_color(5, 0, 255, 255); // CYAN127 true cyan, 5
+            rgb_matrix_set_color(6, 0, 128, 255); // AZRE148 true azure, 6
+            rgb_matrix_set_color(7, 0, 0, 255); // BLUE169 true blue, 7
+            rgb_matrix_set_color(8, 127, 0, 255); // VILT180 true violet, 8
+            rgb_matrix_set_color(9, 255, 0, 255); // MGTA201 true magenta, 9
+            rgb_matrix_set_color(10, 255, 0, 127); // ROSE222 true rose, 0
+
+            rgb_matrix_set_color(13, 255, 255, 255); // WHITE, Backslash
+
+            rgb_matrix_set_color(29, 255, 255, 255); // WHITE, A
+            rgb_matrix_set_color(30, 255, 255, 255); // WHITE, S
+            rgb_matrix_set_color(31, 255, 255, 255); // WHITE, D
+            rgb_matrix_set_color(32, 255, 255, 255); // WHITE, F
+            rgb_matrix_set_color(33, 255, 255, 255); // WHITE, G
+
+            rgb_matrix_set_color(42, 255, 255, 255); // WHITE, Z
+            rgb_matrix_set_color(43, 255, 255, 255); // WHITE, X
+            rgb_matrix_set_color(44, 255, 255, 255); // WHITE, C
+            rgb_matrix_set_color(45, 255, 255, 255); // WHITE, V
+            rgb_matrix_set_color(46, 255, 255, 255); // WHITE, B
+            rgb_matrix_set_color(47, 255, 255, 255); // WHITE, N
+            rgb_matrix_set_color(48, 255, 255, 255); // WHITE, M
+            rgb_matrix_set_color(49, 255, 255, 255); // WHITE, <
+            rgb_matrix_set_color(50, 255, 255, 255); // WHITE, >
+            rgb_matrix_set_color(51, 255, 255, 255); // WHITE, ?
             break;
     }
     return true;
