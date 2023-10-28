@@ -15,6 +15,13 @@
   */
 
 #include QMK_KEYBOARD_H
+#include "action_layer.h"
+#include "eeconfig.h"
+
+#include "raw_hid.h"
+
+#include "snake.h"
+#include "timer.h"
 
 enum keycodes {
     RED0 = SAFE_RANGE,
@@ -83,6 +90,17 @@ enum keycodes {
     BISEXUAL,
     TRANS,
     PAN,
+    MACRO_CUTE,
+    MACRO_MEGAPANINI,
+    MACRO_MEOW,
+    MACRO_NO_YOU,
+    MACRO_LOGIN_MINECRAFT,
+    EXIT_SNAKE,
+    SNAKE,
+    DIRRGHT,
+    DIRUP,
+    DIRLEFT,
+    DIRDOWN,
 };
 
 enum anne_pro_layers {
@@ -92,6 +110,7 @@ enum anne_pro_layers {
     MACRO,
     COLOR,
     COLOR2,
+    SNAKE_LAYER,
 };
 
 // clang-format off
@@ -159,28 +178,30 @@ enum anne_pro_layers {
   * |-----------------------------------------------------------------------------------------+
   * | Tab    |  q  | UP  |  e  |  r  |  t  |  y  |  u  |  i  |  o  |PLAY| PREV | NEXT|   \    |
   * |-----------------------------------------------------------------------------------------+
-  * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | PGUP|PGDN |    Enter    |
+  * | Esc     |LEFT |DOWN |RIGHT|  f  |  g  |  h  |  j  |  k  |  l  | BRI+ | BRI- |    Enter    |
   * |-----------------------------------------------------------------------------------------+
   * | Shift      |  z  |  x  |     |  v  |  b  |  n  |  m  |  ,  |INSRT| NUM.|    Shift       |
   * |-----------------------------------------------------------------------------------------+
-  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  |  FN1  |  FN2  |  LED  |
+  * | Ctrl  |  L1   |  Alt  |               space             |  Alt  | MACRO |  FN2  |  LED  |
   * \-----------------------------------------------------------------------------------------/
   *
   */
  [FN2] = LAYOUT_60_ansi( /* FN2 */
     _______, KC_AP2_BT1, KC_AP2_BT2, KC_AP2_BT3, KC_AP2_BT4, _______, _______, _______, _______, KC_AP_RGB_TOG, KC_MUTE, KC_VOLD, KC_VOLU, KC_PAUSE,
     _______, _______,    KC_UP,      _______,    _______,    _______, _______, _______, _______, _______,       KC_MPLY,       KC_MPRV,       KC_MNXT,        _______,
-    _______, KC_LEFT,    KC_DOWN,    KC_RGHT,    _______,    _______, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT,       KC_PGUP,       KC_PGDN,       _______,
-    _______,             _______,    _______,    _______,    _______, _______, _______, OSL(MACRO), _______,       KC_INS,        KC_KP_DOT,        _______,
-    _______, _______,    _______,                                     _______,                   _______,       MO(FN1),       MO(FN2),       OSL(COLOR)
+    _______, KC_LEFT,    KC_DOWN,    KC_RGHT,    _______,    _______, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT,       KC_AP_RGB_VAI,       KC_AP_RGB_VAD,       _______,
+    _______,             _______,    _______,    _______,    _______, _______, _______, _______, _______,       KC_INS,        KC_KP_DOT,        _______,
+    _______, _______,    _______,                                     _______,                   _______,       MO(MACRO),       MO(FN2),       OSL(COLOR)
  ),
+
  [MACRO] = LAYOUT_60_ansi( /* MACRO */
-    TG(BASE), _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, MACRO_CUTE, MACRO_MEGAPANINI, MACRO_MEOW, MACRO_NO_YOU, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, SNAKE, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, MACRO_LOGIN_MINECRAFT, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, _______, _______,                   _______,                            _______, _______, _______, _______
  ),
+
  [COLOR] = LAYOUT_60_ansi( /* COLOR */
     TG(BASE), RED0, ORNG21, YLLW43, GRN85, CYAN127, AZRE148, BLUE169, VILT180, MGTA201, ROSE222, _______, _______, OSL(COLOR2),
     _______, RED5, ORNG26, YLLW53, GRN95, CYAN132, AZRE153, BLUE172, VILT185, MGTA206, ROSE230, _______, _______, _______,
@@ -188,12 +209,21 @@ enum anne_pro_layers {
     _______, RED15, ORNG36, YLLW73, GRN115, CYAN142, AZRE163, BLUE178, VILT195, MGTA217, ROSE245, _______,
     _______, _______, _______,                   WHITE,                            _______, _______, _______, _______
  ),
+
  [COLOR2] = LAYOUT_60_ansi( /* COLOR2 */
     TG(BASE), SPEED1, SPEED2, SPEED3, SPEED4, SPEED5, SPEED6, SPEED7, SPEED8, SPEED9, SPEED10, _______, _______, OSL(COLOR),
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
     _______, GAY, LESBIAN, BISEXUAL, TRANS, PAN, _______, _______, _______, _______, _______, _______, _______,
     _______, EFFECT1, EFFECT2, EFFECT3, EFFECT4, EFFECT5, EFFECT6, EFFECT7, EFFECT8, EFFECT9, EFFECT10, _______,
     _______, _______, _______,                   _______,                            _______, _______, _______, _______
+ ),
+
+ [SNAKE_LAYER] = LAYOUT_60_ansi( /* COLOR2 */
+    EXIT_SNAKE, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, DIRUP,
+    _______, _______, _______,                   _______,                            _______, DIRLEFT, DIRDOWN, DIRRGHT
  ),
 };
 // clang-format on
@@ -202,6 +232,7 @@ enum anne_pro_layers {
 void keyboard_post_init_user(void) {
     ap2_led_enable();
     ap2_led_set_profile(7);
+    snake_init();
 }
 
 bool led_update_user(led_t leds) {
@@ -224,523 +255,654 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case RED0:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	RED5,
         case RED5:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(5, 255, 255); //set HSV 
+                rgb_matrix_sethsv(5, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	RED10,
         case RED10:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(10, 255, 255); //set HSV 
+                rgb_matrix_sethsv(10, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	RED15,
         case RED15:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(15, 255, 255); //set HSV 
+                rgb_matrix_sethsv(15, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ORNG21,
         case ORNG21:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(21, 255, 255); //set HSV 
+                rgb_matrix_sethsv(21, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ORNG26,
         case ORNG26:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(26, 255, 255); //set HSV 
+                rgb_matrix_sethsv(26, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ORNG31,
         case ORNG31:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(31, 255, 255); //set HSV 
+                rgb_matrix_sethsv(31, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ORNG36,
         case ORNG36:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(36, 255, 255); //set HSV 
+                rgb_matrix_sethsv(36, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	YLLW43,
         case YLLW43:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(43, 255, 255); //set HSV 
+                rgb_matrix_sethsv(43, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	YLLW53,
         case YLLW53:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(53, 255, 255); //set HSV 
+                rgb_matrix_sethsv(53, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	YLLW63,
         case YLLW63:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(63, 255, 255); //set HSV 
+                rgb_matrix_sethsv(63, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	YLLW73,
         case YLLW73:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(73, 255, 255); //set HSV 
+                rgb_matrix_sethsv(73, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	GRN85,
         case GRN85:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(85, 255, 255); //set HSV 
+                rgb_matrix_sethsv(85, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	GRN95,
         case GRN95:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(95, 255, 255); //set HSV 
+                rgb_matrix_sethsv(95, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	GRN105,
         case GRN105:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(105, 255, 255); //set HSV 
+                rgb_matrix_sethsv(105, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	GRN115,
         case GRN115:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(115, 255, 255); //set HSV 
+                rgb_matrix_sethsv(115, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	CYAN127,
         case CYAN127:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(127, 255, 255); //set HSV 
+                rgb_matrix_sethsv(127, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	CYAN132,
         case CYAN132:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(132, 255, 255); //set HSV 
+                rgb_matrix_sethsv(132, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	CYAN137,
         case CYAN137:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(137, 255, 255); //set HSV 
+                rgb_matrix_sethsv(137, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	CYAN142,
         case CYAN142:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(142, 255, 255); //set HSV 
+                rgb_matrix_sethsv(142, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	AZRE148,
         case AZRE148:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(148, 255, 255); //set HSV 
+                rgb_matrix_sethsv(148, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	AZRE153,
         case AZRE153:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(153, 255, 255); //set HSV 
+                rgb_matrix_sethsv(153, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	AZRE158,
         case AZRE158:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(158, 255, 255); //set HSV 
+                rgb_matrix_sethsv(158, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	AZRE163,
         case AZRE163:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(163, 255, 255); //set HSV 
+                rgb_matrix_sethsv(163, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	BLUE169,
         case BLUE169:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(169, 255, 255); //set HSV 
+                rgb_matrix_sethsv(169, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	BLUE172,
         case BLUE172:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(172, 255, 255); //set HSV 
+                rgb_matrix_sethsv(172, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	BLUE175,
         case BLUE175:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(175, 255, 255); //set HSV 
+                rgb_matrix_sethsv(175, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	BLUE178,
         case BLUE178:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(178, 255, 255); //set HSV 
+                rgb_matrix_sethsv(178, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	VILT180,
         case VILT180:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(180, 255, 255); //set HSV 
+                rgb_matrix_sethsv(180, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	VILT185,
         case VILT185:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(185, 255, 255); //set HSV 
+                rgb_matrix_sethsv(185, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	VILT190,
         case VILT190:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(190, 255, 255); //set HSV 
+                rgb_matrix_sethsv(190, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	VILT195,
         case VILT195:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(195, 255, 255); //set HSV 
+                rgb_matrix_sethsv(195, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	MGTA201,
         case MGTA201:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(201, 255, 255); //set HSV 
+                rgb_matrix_sethsv(201, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	MGTA206,
         case MGTA206:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(206, 255, 255); //set HSV 
+                rgb_matrix_sethsv(206, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	MGTA211,
         case MGTA211:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(211, 255, 255); //set HSV 
+                rgb_matrix_sethsv(211, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	MGTA217,
         case MGTA217:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(217, 255, 255); //set HSV 
+                rgb_matrix_sethsv(217, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ROSE222,
         case ROSE222:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(222, 255, 255); //set HSV 
+                rgb_matrix_sethsv(222, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ROSE230,
         case ROSE230:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(230, 255, 255); //set HSV 
+                rgb_matrix_sethsv(230, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ROSE238,
         case ROSE238:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(238, 255, 255); //set HSV 
+                rgb_matrix_sethsv(238, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ROSE245,
         case ROSE245:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(245, 255, 255); //set HSV 
+                rgb_matrix_sethsv(245, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //	ROSE245,
         case WHITE:
             if (record->event.pressed) {
                 rgb_matrix_mode(1); //set mode
-                rgb_matrix_sethsv(0, 0, 255); //set HSV 
+                rgb_matrix_sethsv(0, 0, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT1:
             if (record->event.pressed) {
                 rgb_matrix_mode(2); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT2:
             if (record->event.pressed) {
                 rgb_matrix_mode(3); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT3:
             if (record->event.pressed) {
                 rgb_matrix_mode(4); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT4:
             if (record->event.pressed) {
                 rgb_matrix_mode(5); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT5:
             if (record->event.pressed) {
                 rgb_matrix_mode(6); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT6:
             if (record->event.pressed) {
                 rgb_matrix_mode(7); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT7:
             if (record->event.pressed) {
                 rgb_matrix_mode(8); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT8:
             if (record->event.pressed) {
                 rgb_matrix_mode(9); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT9:
             if (record->event.pressed) {
                 rgb_matrix_mode(10); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Rainbow
         case EFFECT10:
             if (record->event.pressed) {
                 rgb_matrix_mode(11); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Gay flag
         case GAY:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_CUSTOM_gay_flag); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Lesbian flag
         case LESBIAN:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_CUSTOM_lesbian_flag); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Bisexual flag
         case BISEXUAL:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_CUSTOM_bisexual_flag); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Trans flag
         case TRANS:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_CUSTOM_trans_flag); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Pan flag
         case PAN:
             if (record->event.pressed) {
                 rgb_matrix_mode(RGB_MATRIX_CUSTOM_pan_flag); //set mode
-                rgb_matrix_sethsv(0, 255, 255); //set HSV 
+                rgb_matrix_sethsv(0, 255, 255); //set HSV
             }
-        return false;
+            return false;
 
         //  Speed1
         case SPEED1:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(25);
             }
-        return false;
+            return false;
 
         //  Speed2
         case SPEED2:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(51);
             }
-        return false;
+            return false;
 
         //  Speed3
         case SPEED3:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(76);
             }
-        return false;
+            return false;
 
         //  Speed4
         case SPEED4:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(102);
             }
-        return false;
+            return false;
 
         //  Speed5
         case SPEED5:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(127);
             }
-        return false;
+            return false;
 
         //  Speed6
         case SPEED6:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(153);
             }
-        return false;
+            return false;
 
         //  Speed7
         case SPEED7:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(178);
             }
-        return false;
+            return false;
 
         //  Speed8
         case SPEED8:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(204);
             }
-        return false;
+            return false;
 
         //  Speed9
         case SPEED9:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(229);
             }
-        return false;
+            return false;
 
         //  Speed10
         case SPEED10:
             if (record->event.pressed) {
                 rgb_matrix_set_speed(255);
             }
-        return false;
+            return false;
+
+        //  The snake thing
+        case DIRUP:
+            if (snake_status.last_moved_direction != DIRECTION_DOWN) {
+                snake_status.direction = DIRECTION_UP;
+            }
+            return false;
+            break;
+        case DIRDOWN:
+            if (snake_status.last_moved_direction != DIRECTION_UP) {
+                snake_status.direction = DIRECTION_DOWN;
+            }
+            return false;
+            break;
+        case DIRLEFT:
+            if (snake_status.last_moved_direction != DIRECTION_RIGHT) {
+                snake_status.direction = DIRECTION_LEFT;
+            }
+            return false;
+            break;
+        case DIRRGHT:
+            if (snake_status.last_moved_direction != DIRECTION_LEFT) {
+                snake_status.direction = DIRECTION_RIGHT;
+            }
+            return false;
+            break;
+        case EXIT_SNAKE:
+            layer_move(BASE);
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+            return false;
+            break;
+        case SNAKE:
+            layer_move(SNAKE_LAYER);
+            rgb_matrix_mode_noeeprom(RGB_MATRIX_CUSTOM_SNAKE);
+            return false;
+            break;
+
+        //  Macro
+        case MACRO_CUTE:
+            if (record->event.pressed) {
+                SEND_STRING("cute\n");
+            }
+            return false;
+
+        //  Macro
+        case MACRO_MEGAPANINI:
+            if (record->event.pressed) {
+                SEND_STRING("[INSERT YOUR COPYPASTA HERE]\n");
+            }
+            return false;
+
+        //  Macro
+        case MACRO_MEOW:
+            if (record->event.pressed) {
+                srand(timer_read32());
+                int r = rand() % 7 + 3;
+                for (int i = 0; i < r; i++) {
+                    int s = rand() % 10;
+                    switch(s) {
+                        case 0:
+                            SEND_STRING("meoow");
+                            break;
+                        case 1:
+                            SEND_STRING("meow");
+                            break;
+                        case 2:
+                            SEND_STRING("miw");
+                            break;
+                        case 3:
+                            SEND_STRING("mew");
+                            break;
+                        case 4:
+                            SEND_STRING("meeeew");
+                            break;
+                        case 5:
+                            SEND_STRING("prrrr");
+                            break;
+                        case 6:
+                            SEND_STRING("meow");
+                            break;
+                        case 7:
+                            SEND_STRING("meow");
+                            break;
+                        case 8:
+                            SEND_STRING("meoooow");
+                            break;
+                        case 9:
+                            SEND_STRING("meoooow");
+                            break;
+                    }
+                    SEND_STRING(" ");
+                }
+                SEND_STRING("\n");
+            }
+            return false;
+
+        //  Macro
+        case MACRO_NO_YOU:
+            if (record->event.pressed) {
+                SEND_STRING("No you\n");
+            }
+            return false;
+
+        //  Macro
+        case MACRO_LOGIN_MINECRAFT:
+            if (record->event.pressed) {
+                SEND_STRING("/login eheh\n");
+            }
+            return false;
 
         default:
             return true; //Process all other keycodes normally
     }
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    if (get_highest_layer(layer_state) == 3) {
+        uint8_t layer = get_highest_layer(layer_state);
+
+        for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+            for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+                uint8_t index = g_led_config.matrix_co[row][col];
+
+                if (index >= led_min && index < led_max && index != NO_LED &&
+                keymap_key_to_keycode(layer, (keypos_t){col,row}) > KC_TRNS) {
+                    rgb_matrix_set_color(index, RGB_WHITE);
+                }
+                else if (index >= led_min && index < led_max && index != NO_LED &&
+                keymap_key_to_keycode(layer, (keypos_t){col,row}) == KC_TRNS) {
+                    rgb_matrix_set_color(index, 0, 0, 0);
+                }
+            }
+        }
+    }
+    return false;
 }
 
 bool rgb_matrix_indicators_user(void) {
@@ -753,8 +915,6 @@ bool rgb_matrix_indicators_user(void) {
         case 2:
             break;
         case 3:
-            rgb_matrix_set_color_all(0, 0, 0); // rest of keys blank/black
-            rgb_matrix_set_color(0, 255, 0, 0); // RED, Escape
             break;
         case 4:
             rgb_matrix_set_color_all(0, 0, 0); // rest of keys blank/black
@@ -832,6 +992,8 @@ bool rgb_matrix_indicators_user(void) {
             rgb_matrix_set_color(49, 255, 255, 255); // WHITE, <
             rgb_matrix_set_color(50, 255, 255, 255); // WHITE, >
             rgb_matrix_set_color(51, 255, 255, 255); // WHITE, ?
+            break;
+        case 6:
             break;
     }
     return true;
